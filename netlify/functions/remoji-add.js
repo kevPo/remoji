@@ -7,35 +7,40 @@ const axios = require("axios");
 const FormData = require("form-data");
 const fetch = require("node-fetch");
 const fs = require("fs");
-import { RemoveBgResult, RemoveBgError, removeBackgroundFromImageUrl } from "remove.bg";
- 
+const bg = require("remove.bg");
+
 const url = "https://www.remove.bg/example.jpg";
 const { REMOVE_BG_KEY } = process.env;
 
 const handler = async (event) => {
-  console.log(`get it this time???`);
+  console.log(`what?`);
 
-  removeBackgroundFromImageUrl({
+  bg.removeBackgroundFromImageUrl({
     url,
     apiKey: REMOVE_BG_KEY,
     size: "regular",
-    type: "person"
-  }).then((result: RemoveBgResult) => {
-    const base64img = result.base64img;
-    console.log('got here');
-    console.log(base64img);
-    return {
-      statusCode: 200,
-      headers: {
-        "Content-Type": "image/png",
-      },
-      body: base64img,
-      isBase64Encoded: true,
-    };
-    
-  }).catch((errors: Array<RemoveBgError>) => {
-   console.log(JSON.stringify(errors));
-  });
+    type: "person",
+  })
+    .then((result) => {
+      console.log("got here");
+      const base64img = result.base64img;
+      console.log(base64img);
+      return {
+        statusCode: 200,
+        headers: {
+          "Content-Type": "image/png",
+        },
+        body: base64img,
+        isBase64Encoded: true,
+      };
+    })
+    .catch((errors) => {
+      console.log(JSON.stringify(errors));
+    });
+
+  return {
+    statusCode: 500,
+  };
 
   // const subject = event.queryStringParameters.name || "World";
 
@@ -85,7 +90,6 @@ const handler = async (event) => {
   //   let keys = Object.keys(response);
   //   keys.forEach((k) => console.log(k));
 
-    
   // } catch (error) {
   //   console.log("uh oh");
   //   return { statusCode: 422, body: String(error) };
